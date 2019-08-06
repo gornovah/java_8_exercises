@@ -1,9 +1,12 @@
 package com.javanme.java8;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalInt;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Clase con ejercicios nivel intermedio
@@ -12,6 +15,7 @@ import java.util.OptionalInt;
 public class Intermedio {
 
     static final String REGEXP = "[- .:,]+"; // separa cadenas de texto en palabras
+    private final Path path = Paths.get("CaliPachanguero.txt");
 
     /**
      * Contar el número de líneas no vacías que tiene el archivo pasado por parámetro.
@@ -23,8 +27,15 @@ public class Intermedio {
      * @see java.nio.file.Files
      * @see java.util.stream.Stream
      */
-    public long ejercicio1(Path archivo) {
-        throw new UnsupportedOperationException();
+    public long ejercicio1(Path archivo)  {
+        try {
+            return Files.lines(path)
+                    .filter(s -> !s.isEmpty())
+                    .count();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     /**
@@ -39,8 +50,37 @@ public class Intermedio {
      * @see java.util.stream.Stream
      * @see java.util.stream.IntStream
      */
-    public OptionalInt ejercicio2(Path archivo) {
-        throw new UnsupportedOperationException();
+    public OptionalInt ejercicio2(Path archivo) throws IOException {
+        Files.lines(path)
+                .forEach(s -> Stream.of(s).map(splittingBy(REGEXP))
+                .flatMap(Arrays::stream)
+                .map(splittingBy("\\s+"))
+                .mapToInt(value -> value.length)
+                .max()
+                .orElse(0));
+
+
+    }
+
+    private Function<String, String[]> splittingBy(String regexp) {
+        return s -> s.split(regexp);
+    }
+
+    private List<String>  analyseLine(String text) {
+        int maxWord = 0;
+        int count = text.split("\\+s").length;
+        List<String> lineCount = new ArrayList<>();
+
+
+        if (count > maxWord){
+            lineCount.clear();
+            lineCount.add(text);
+            maxWord = count;
+        }else if (maxWord == count){
+            lineCount.add(text);
+        }
+
+        return lineCount;
     }
 
     /**
